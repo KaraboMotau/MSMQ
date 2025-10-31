@@ -84,5 +84,63 @@ namespace MSMQ
         {
 
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string queuePath = @".\Private$\MyQueue";
+
+            if (!MessageQueue.Exists(queuePath))
+            {
+                Console.WriteLine("Queue does not exist.");
+                return;
+            }
+
+            using (MessageQueue queue = new MessageQueue(queuePath))
+            {
+                queue.Formatter = new XmlMessageFormatter(new string[] { "System.String" });
+
+                try
+                {
+                    System.Messaging.Message msg = queue.Receive(); // Blocks until a message is available
+                    string body = msg.Body.ToString();
+                    textRead.Text= body;
+                   // Console.WriteLine($"Received message: {body}");
+                }
+                catch (MessageQueueException mqe)
+                {
+                    Console.WriteLine($"MSMQ Error: {mqe.Message}");
+                }
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string queuePath = @".\Private$\MyQueue";
+
+            if (!MessageQueue.Exists(queuePath))
+            {
+                Console.WriteLine("Queue does not exist.");
+                return;
+            }
+
+            using (MessageQueue queue = new MessageQueue(queuePath))
+            {
+                queue.Formatter = new XmlMessageFormatter(new string[] { "System.String" });
+
+                try
+                {
+                    System.Messaging.Message msg = queue.Receive(); // Waits for a message
+                    string messageText = msg.Body.ToString();
+
+                    textPrint.Text = messageText;
+                    //Console.WriteLine($"Received message: {messageText}");
+                }
+                catch (MessageQueueException mqe)
+                {
+                    //Console.WriteLine($"MSMQ error: {mqe.Message}");
+                    textPrint.Text = $"MSMQ error: {mqe.Message}";
+                }
+            }
+        }
     }
 }
